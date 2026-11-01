@@ -1,0 +1,32 @@
+# Название пайплайна, отображается во вкладке Actions
+name: CI
+
+# Запуск пайплайна при каждом push в репозиторий
+on: push
+
+jobs:
+  test-and-build:
+    # Виртуальная машина GitHub, на которой выполняется job
+    runs-on: ubuntu-latest
+    steps:
+      # Получение кода репозитория на runner
+      - name: Получение кода (checkout)
+        uses: actions/checkout@v4
+
+      # Установка нужной версии Python
+      - name: Установка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Установка зависимостей проекта
+      - name: Установка зависимостей
+        run: pip install -r requirements.txt
+
+      # Запуск автотестов (pytest)
+      - name: Запуск автотестов
+        run: pytest -v
+
+      # Сборка Docker-образа без публикации в реестр
+      - name: Сборка Docker-образа
+        run: docker build -t myflaskapp:ci .
